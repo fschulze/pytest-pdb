@@ -14,7 +14,6 @@ Commands
 --------
 
 ``whichtest``
-
     When debugging with pdb, type ``whichtest`` which should print something like::
 
         Currently in test_pdb.py:13: TestClasses.test_class_pdb
