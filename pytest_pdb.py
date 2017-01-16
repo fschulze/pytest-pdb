@@ -5,10 +5,12 @@ import pytest
 
 def find_test(currentframe):
     frame = currentframe
+    prev = frame
     while frame:
         for value in frame.f_locals.values():
             if isinstance(value, pytest.Item):
-                return value
+                return (value, prev)
+        prev = frame
         frame = frame.f_back
 
 
@@ -17,11 +19,15 @@ class PdbExtension:
         """whichtest
         Show which test we are currently in.
         """
-        item = find_test(self.curframe)
-        if item is None:
+        test = find_test(self.curframe)
+        if test is None:
             print("Couldn't determine current test", file=self.stdout)
             return
-        print("Currently in %s:%s: %s " % item.location, file=self.stdout)
+
+        (item, frame) = test
+        print("Currently in {} ({}:{}) on line {}".format(
+            item.location[2], item.location[0], item.location[1] + 1,
+            frame.f_lineno), file=self.stdout)
 
 
 def pytest_configure(config):
