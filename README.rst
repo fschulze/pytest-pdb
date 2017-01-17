@@ -29,5 +29,8 @@ Changes
 0.1.0 - Unreleased
 ------------------
 
+- Fix/improve location reporting.
+  [blueyed (Daniel Hahler)]
+
 - Initial release.
   [fschulze (Florian Schulze)]
