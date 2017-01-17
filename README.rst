@@ -26,11 +26,15 @@ Commands
 Changes
 =======
 
-0.1.0 - Unreleased
+0.2.0 - Unreleased
 ------------------
 
 - Fix/improve location reporting.
   [blueyed (Daniel Hahler)]
+
+
+0.1.0 - 2016-07-09
+------------------
 
 - Initial release.
   [fschulze (Florian Schulze)]
