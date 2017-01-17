@@ -26,7 +26,7 @@ Commands
 Changes
 =======
 
-0.2.0 - Unreleased
+0.2.0 - 2017-01-17
 ------------------
 
 - Fix/improve location reporting.
