@@ -4,7 +4,7 @@ import pytest
 import sys
 
 
-def find_test(currentframe):
+def find_test_by_frame(currentframe):
     frame = currentframe
     prev = frame
     while frame:
@@ -13,6 +13,15 @@ def find_test(currentframe):
                 return (value, prev)
         prev = frame
         frame = frame.f_back
+    return (None, currentframe)
+
+
+def find_test_by_stack(stack):
+    for index, (frame, lineno) in reversed(list(enumerate(stack))):
+        for value in frame.f_locals.values():
+            if isinstance(value, pytest.Item):
+                return (value, stack[index + 1][0], index + 1)
+    return (None, stack[0], 0)
 
 
 class PdbExtension:
@@ -20,14 +29,13 @@ class PdbExtension:
         """whichtest
         Show which test we are currently in.
         """
-        test = find_test(self.curframe)
+        (test, frame, index) = find_test_by_stack(self.stack)
         if test is None:
             print("Couldn't determine current test", file=self.stdout)
             return
 
-        (item, frame) = test
         print("Currently in {} ({}:{}) on line {}".format(
-            item.location[2], item.location[0], item.location[1] + 1,
+            test.location[2], test.location[0], test.location[1] + 1,
             frame.f_lineno), file=self.stdout)
 
 
@@ -56,12 +64,11 @@ def pytest_configure(config):
 def pytest_enter_pdb(config):
     import _pytest.config
     tw = _pytest.config.create_terminal_writer(config)
-    test = find_test(sys._getframe().f_back)
+    (test, frame) = find_test_by_frame(sys._getframe().f_back)
     if test is None:
         tw.sep(">", "Couldn't determine current test")
         return
 
-    (item, frame) = test
     tw.sep(">", "Currently in {} ({}:{}) on line {}".format(
-        item.location[2], item.location[0], item.location[1] + 1,
+        test.location[2], test.location[0], test.location[1] + 1,
         frame.f_lineno))
