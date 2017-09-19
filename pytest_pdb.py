@@ -10,7 +10,20 @@ def find_test(stack):
             if 'pyfuncitem' in frame.f_locals:
                 item = frame.f_locals['pyfuncitem']
                 if isinstance(item, pytest.Item):
-                    return (item, stack[c][0], c)
+                    test_frame = stack[c][0]
+                    return (item, c, 'on line %d' % test_frame.f_lineno)
+
+    # No test item found, check if we're in fixture setup.
+    for c, st in enumerate(stack, start=1):
+        frame = st[0]
+        if frame.f_code.co_name == 'call_fixture_func':
+            f_locals = frame.f_locals
+            if 'request' in f_locals:
+                request = f_locals['request']
+                item = request._pyfuncitem
+                if isinstance(item, pytest.Item):
+                    return (item, len(stack)-1,
+                            'fixture setup for %s' % request.fixturename)
 
 
 class PdbExtension:
@@ -22,8 +35,7 @@ class PdbExtension:
         if test is None:
             print("Couldn't determine current test.", file=self.stdout)
             return
-        (item, frame, stack_idx) = test
-
+        (item, stack_idx, location) = test
 
         # Describe offset to current frame (for up/down).
         cur_idx = None
@@ -43,9 +55,9 @@ class PdbExtension:
             else:
                 desc = ' ({} frames up)'.format(0 - offset)
 
-        print("Currently in {} ({}:{}) on line {}{}.".format(
+        print("Currently in {} ({}:{}) {}{}.".format(
             item.location[2], item.location[0], item.location[1] + 1,
-            frame.f_lineno, desc), file=self.stdout)
+            location, desc), file=self.stdout)
 
     def do_gototest(self, arg):
         """gototest
@@ -56,7 +68,7 @@ class PdbExtension:
             print("Couldn't determine current test.", file=self.stdout)
             return
 
-        self._select_frame(test_caller[2])
+        self._select_frame(test_caller[1])
 
     def do_top(self, arg):
         """top
