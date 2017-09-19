@@ -24,6 +24,48 @@ def find_test_by_stack(stack):
     return (None, stack[0], 0)
 
 
+def find_settrace_frame(curframe):
+    frame = curframe
+    while frame:
+        if frame.f_code.co_name == 'set_trace':
+            if frame.f_back:
+                return frame.f_back
+        frame = frame.f_back
+
+
+def offset_between_frames(currentframe, destinationframe):
+    # search from current
+    index = 0
+    frame = currentframe
+    while frame:
+        print(frame.f_code.co_name, frame.f_code.co_filename)
+        if frame == destinationframe:
+            return index
+        index -= 1
+        frame = frame.f_back
+    # search from destination
+    index = 0
+    frame = destinationframe
+    while frame:
+        if frame == currentframe:
+            return index
+        index += 1
+        frame = frame.f_back
+
+
+def offset_description(offset):
+    if offset == 0:
+        return 'at current frame'
+    elif offset == 1:
+        return '1 frame above'
+    elif offset > 1:
+        return '%s frames above' % offset
+    elif offset == -1:
+        return '1 frame below'
+    else:
+        return '%s frames below' % -offset
+
+
 class PdbExtension:
     def do_whichtest(self, arg):
         """whichtest | wt
@@ -34,9 +76,11 @@ class PdbExtension:
             print("Couldn't determine current test", file=self.stdout)
             return
 
-        print("Currently in {} ({}:{}) on line {}".format(
+        offset = index - self.curindex
+
+        print("Currently in {} ({}:{}) on line {} ({})".format(
             test.location[2], test.location[0], test.location[1] + 1,
-            frame.f_lineno), file=self.stdout)
+            frame.f_lineno, offset_description(offset)), file=self.stdout)
     do_wt = do_whichtest
 
     def do_gototest(self, arg):
@@ -98,11 +142,17 @@ def pytest_configure(config):
 def pytest_enter_pdb(config):
     import _pytest.config
     tw = _pytest.config.create_terminal_writer(config)
-    (test, frame) = find_test_by_frame(sys._getframe().f_back)
+    curframe = sys._getframe().f_back
+    (test, frame) = find_test_by_frame(curframe)
     if test is None:
         tw.sep(">", "Couldn't determine current test")
         return
 
-    tw.sep(">", "Currently in {} ({}:{}) on line {}".format(
+    offset = offset_between_frames(find_settrace_frame(curframe), frame)
+    desc = ''
+    if offset is not None:
+        desc = ' (%s)' % offset_description(offset)
+
+    tw.sep(">", "Currently in {} ({}:{}) on line {}{}".format(
         test.location[2], test.location[0], test.location[1] + 1,
-        frame.f_lineno))
+        frame.f_lineno, desc))

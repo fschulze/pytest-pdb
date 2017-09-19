@@ -42,6 +42,9 @@ Changes
 0.3.0 - Unreleased
 ------------------
 
+- Show offset of current frame to test frame.
+  [blueyed, fschulze]
+
 - Add ``top`` and ``bottom`` commands.
   [blueyed]
 
