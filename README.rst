@@ -13,6 +13,11 @@ install via::
 Commands
 --------
 
+``gototest``
+    When debugging with pdb, type ``gototest`` which brings you directly to
+    the frame of the test function.
+
+
 ``whichtest``
     When debugging with pdb, type ``whichtest`` which should print something like::
 
@@ -28,6 +33,9 @@ Changes
 
 0.3.0 - Unreleased
 ------------------
+
+- Add ``gototest`` command.
+  [blueyed]
 
 - Print location upon entering pdb.
   [blueyed, fschulze]

@@ -38,6 +38,17 @@ class PdbExtension:
             test.location[2], test.location[0], test.location[1] + 1,
             frame.f_lineno), file=self.stdout)
 
+    def do_gototest(self, arg):
+        """gototest
+        Go to frame containing the test.
+        """
+        (test, frame, index) = find_test_by_stack(self.stack)
+        if test is None:
+            print("Couldn't determine current test.", file=self.stdout)
+            return
+
+        self._select_frame(index)
+
 
 def pytest_configure(config):
     cmds = {x[3:] for x in dir(PdbExtension) if x.startswith('do_')}
