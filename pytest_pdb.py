@@ -59,7 +59,10 @@ def pytest_configure(config):
         doc = getattr(
             getattr(PdbExtension, 'do_%s' % cmd), '__doc__', None)
         if doc:
-            setattr(PdbExtension, 'help_%s' % cmd, lambda self: print(doc, file=self.stdout))
+            setattr(
+                PdbExtension,
+                'help_%s' % cmd,
+                lambda self: print(doc, file=self.stdout))
 
     prefixes = {'do', 'help'}
     for prefix in prefixes:
