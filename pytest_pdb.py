@@ -51,6 +51,24 @@ class PdbExtension:
         self._select_frame(index)
     do_gt = do_gototest
 
+    def do_top(self, arg):
+        """top
+        Move to top (oldest) frame.
+        """
+        if self.curindex == 0:
+            self.error('Oldest frame')
+            return
+        self._select_frame(0)
+
+    def do_bottom(self, arg):
+        """bottom
+        Move to bottom (newest) frame.
+        """
+        if self.curindex + 1 == len(self.stack):
+            self.error('Newest frame')
+            return
+        self._select_frame(len(self.stack) - 1)
+
 
 def pytest_configure(config):
     cmds = {x[3:] for x in dir(PdbExtension) if x.startswith('do_')}

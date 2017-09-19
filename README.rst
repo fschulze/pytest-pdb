@@ -28,11 +28,22 @@ Commands
     If that changes or is replaced by a plugin, the whichtest command may fail.
 
 
+``top``
+     Move to top (oldest) frame.
+
+
+``bottom``
+     Move to bottom (newest) frame.
+
+
 Changes
 =======
 
 0.3.0 - Unreleased
 ------------------
+
+- Add ``top`` and ``bottom`` commands.
+  [blueyed]
 
 - Add ``wt``/``gt`` shortcuts.
   [blueyed]
