@@ -4,10 +4,8 @@ import pytest
 
 
 def find_test(stack):
-    c = 0
-    for st in stack:
+    for c, st in enumerate(stack, start=1):
         frame = st[0]
-        c += 1
         if frame.f_code.co_name == 'pytest_pyfunc_call':
             if 'pyfuncitem' in frame.f_locals:
                 item = frame.f_locals['pyfuncitem']
