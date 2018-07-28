@@ -29,6 +29,8 @@ Changes
 0.3.0 - Unreleased
 ------------------
 
+- Print location upon entering pdb.
+  [blueyed, fschulze]
 
 
 0.2.0 - 2017-01-17

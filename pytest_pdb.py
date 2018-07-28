@@ -1,6 +1,7 @@
 from __future__ import print_function
 import pdb
 import pytest
+import sys
 
 
 def find_test(currentframe):
@@ -50,3 +51,17 @@ def pytest_configure(config):
             attr = '%s_%s' % (prefix, cmd)
             if hasattr(PdbExtension, attr):
                 setattr(pdb.Pdb, attr, getattr(PdbExtension, attr))
+
+
+def pytest_enter_pdb(config):
+    import _pytest.config
+    tw = _pytest.config.create_terminal_writer(config)
+    test = find_test(sys._getframe().f_back)
+    if test is None:
+        tw.sep(">", "Couldn't determine current test")
+        return
+
+    (item, frame) = test
+    tw.sep(">", "Currently in {} ({}:{}) on line {}".format(
+        item.location[2], item.location[0], item.location[1] + 1,
+        frame.f_lineno))
