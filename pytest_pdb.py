@@ -1,9 +1,11 @@
 from __future__ import print_function
 import pdb
 import pytest
+import unittest
 
 
 def find_test(stack):
+    unittest_item = None
     for c, st in enumerate(stack, start=1):
         frame = st[0]
         if frame.f_code.co_name == 'pytest_pyfunc_call':
@@ -12,6 +14,22 @@ def find_test(stack):
                 if isinstance(item, pytest.Item):
                     test_frame = stack[c][0]
                     return (item, c, 'on line %d' % test_frame.f_lineno)
+
+        # unittest TestCases.
+        if frame.f_code.co_name == 'pytest_runtest_call':
+            if 'item' in frame.f_locals:
+                item = frame.f_locals['item']
+                if isinstance(item, pytest.Item):
+                    unittest_item = item
+        elif unittest_item:
+            if 'self' in frame.f_locals:
+                s = frame.f_locals['self']
+                if isinstance(s, unittest.TestCase):
+                    test_frame = frame
+                    test_frame_c = c
+
+    if unittest_item and test_frame:
+        return (item, test_frame_c - 1, 'on line %d' % test_frame.f_lineno)
 
     # No test item found, check if we're in fixture setup.
     for c, st in enumerate(stack, start=1):
