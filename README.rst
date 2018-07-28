@@ -13,12 +13,12 @@ install via::
 Commands
 --------
 
-``gototest``
+``gototest | gt``
     When debugging with pdb, type ``gototest`` which brings you directly to
     the frame of the test function.
 
 
-``whichtest``
+``whichtest | wt``
     When debugging with pdb, type ``whichtest`` which should print something like::
 
         Currently in test_pdb.py:13: TestClasses.test_class_pdb
@@ -33,6 +33,9 @@ Changes
 
 0.3.0 - Unreleased
 ------------------
+
+- Add ``wt``/``gt`` shortcuts.
+  [blueyed]
 
 - Add ``gototest`` command.
   [blueyed]

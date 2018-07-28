@@ -26,7 +26,7 @@ def find_test_by_stack(stack):
 
 class PdbExtension:
     def do_whichtest(self, arg):
-        """whichtest
+        """whichtest | wt
         Show which test we are currently in.
         """
         (test, frame, index) = find_test_by_stack(self.stack)
@@ -37,9 +37,10 @@ class PdbExtension:
         print("Currently in {} ({}:{}) on line {}".format(
             test.location[2], test.location[0], test.location[1] + 1,
             frame.f_lineno), file=self.stdout)
+    do_wt = do_whichtest
 
     def do_gototest(self, arg):
-        """gototest
+        """gototest | gt
         Go to frame containing the test.
         """
         (test, frame, index) = find_test_by_stack(self.stack)
@@ -48,6 +49,7 @@ class PdbExtension:
             return
 
         self._select_frame(index)
+    do_gt = do_gototest
 
 
 def pytest_configure(config):
