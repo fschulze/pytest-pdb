@@ -6,7 +6,7 @@ setup(
     description='pytest plugin which adds pdb helper commands related to pytest.',
     long_description=open("README.rst").read(),
     license="MIT license",
-    version='0.3.0.dev0',
+    version='0.3.0',
     author='Florian Schulze',
     author_email='florian.schulze@gmx.net',
     url='https://github.com/fschulze/pytest-pdb',

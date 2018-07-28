@@ -39,7 +39,7 @@ Commands
 Changes
 =======
 
-0.3.0 - Unreleased
+0.3.0 - 2018-07-28
 ------------------
 
 - Show offset of current frame to test frame.
