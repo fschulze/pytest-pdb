@@ -46,7 +46,7 @@ def find_test(stack):
 
 class PdbExtension:
     def do_whichtest(self, arg):
-        """whichtest
+        """whichtest | wt
         Show which test we are currently in.
         """
         test = find_test(self.stack)
@@ -76,9 +76,10 @@ class PdbExtension:
         print("Currently in {} ({}:{}) {}{}.".format(
             item.location[2], item.location[0], item.location[1] + 1,
             location, desc), file=self.stdout)
+    do_wt = do_whichtest
 
     def do_gototest(self, arg):
-        """gototest
+        """gototest | gt
         Go to frame containing the test.
         """
         test_caller = find_test(self.stack)
@@ -87,6 +88,7 @@ class PdbExtension:
             return
 
         self._select_frame(test_caller[1])
+    do_gt = do_gototest
 
     def do_top(self, arg):
         """top
