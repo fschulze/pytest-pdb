@@ -39,6 +39,13 @@ Commands
 Changes
 =======
 
+0.3.1 - 2018-07-31
+------------------
+
+- Remove debug print output.
+  [fschulze]
+
+
 0.3.0 - 2018-07-28
 ------------------
 

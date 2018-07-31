@@ -38,7 +38,6 @@ def offset_between_frames(currentframe, destinationframe):
     index = 0
     frame = currentframe
     while frame:
-        print(frame.f_code.co_name, frame.f_code.co_filename)
         if frame == destinationframe:
             return index
         index -= 1
