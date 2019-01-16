@@ -84,7 +84,7 @@ class PdbExtension:
 
     def do_gototest(self, arg):
         """gototest | gt
-        Go to frame containing the test.
+        Go to frame containing the current test.
         """
         (test, frame, index) = find_test_by_stack(self.stack)
         if test is None:
