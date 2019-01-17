@@ -84,7 +84,7 @@ class PdbExtension:
 
     def do_gototest(self, arg):
         """gototest | gt
-        Go to frame containing the test.
+        Go to frame containing the current test.
         """
         (test, frame, index) = find_test_by_stack(self.stack)
         if test is None:
@@ -115,15 +115,6 @@ class PdbExtension:
 
 def pytest_configure(config):
     cmds = {x[3:] for x in dir(PdbExtension) if x.startswith('do_')}
-    # setup help_* for Python 2.x
-    for cmd in cmds:
-        doc = getattr(
-            getattr(PdbExtension, 'do_%s' % cmd), '__doc__', None)
-        if doc:
-            setattr(
-                PdbExtension,
-                'help_%s' % cmd,
-                lambda self: print(doc, file=self.stdout))
 
     prefixes = {'do', 'help'}
     for prefix in prefixes:
