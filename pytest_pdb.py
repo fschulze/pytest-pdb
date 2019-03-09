@@ -9,8 +9,11 @@ def find_test_by_frame(currentframe):
     prev = frame
     while frame:
         for value in frame.f_locals.values():
-            if isinstance(value, pytest.Item):
-                return (value, prev)
+            try:
+                if isinstance(value, pytest.Item):
+                    return (value, prev)
+            except Exception:
+                pass
         prev = frame
         frame = frame.f_back
     return (None, currentframe)
