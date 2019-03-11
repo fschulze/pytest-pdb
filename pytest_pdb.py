@@ -4,16 +4,27 @@ import pytest
 import sys
 
 
+def _is_relevant_frame(frame):
+    """
+    Check given frame for a relevant pytest item.
+
+    Returns pytest.Item on success, None otherwise.
+    """
+    for value in frame.f_locals.values():
+        try:
+            if isinstance(value, pytest.Item):
+                return value
+        except Exception:
+            pass
+
+
 def find_test_by_frame(currentframe):
     frame = currentframe
     prev = frame
     while frame:
-        for value in frame.f_locals.values():
-            try:
-                if isinstance(value, pytest.Item):
-                    return (value, prev)
-            except Exception:
-                pass
+        pytest_item = _is_relevant_frame(frame)
+        if pytest_item:
+            return (pytest_item, prev)
         prev = frame
         frame = frame.f_back
     return (None, currentframe)
@@ -21,9 +32,9 @@ def find_test_by_frame(currentframe):
 
 def find_test_by_stack(stack):
     for index, (frame, lineno) in reversed(list(enumerate(stack))):
-        for value in frame.f_locals.values():
-            if isinstance(value, pytest.Item):
-                return (value, stack[index + 1][0], index + 1)
+        pytest_item = _is_relevant_frame(frame)
+        if pytest_item:
+            return (pytest_item, stack[index + 1][0], index + 1)
     return (None, stack[0], 0)
 
 
