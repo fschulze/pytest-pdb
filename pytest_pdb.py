@@ -2,6 +2,11 @@ from __future__ import print_function
 import pdb
 import pytest
 import sys
+import warnings
+
+
+class PytestPdbUserWarning(UserWarning):
+    pass
 
 
 def find_test_by_frame(currentframe):
@@ -120,13 +125,23 @@ def pytest_configure(config):
     for prefix in prefixes:
         for cmd in cmds:
             attr = '%s_%s' % (prefix, cmd)
+
+            new = getattr(PdbExtension, attr, None)
+            if new is None:
+                continue
+
             if hasattr(pdb.Pdb, attr):
-                raise ValueError
-    for prefix in prefixes:
-        for cmd in cmds:
-            attr = '%s_%s' % (prefix, cmd)
-            if hasattr(PdbExtension, attr):
-                setattr(pdb.Pdb, attr, getattr(PdbExtension, attr))
+                existing = getattr(pdb.Pdb, attr)
+                if existing is new:
+                    # This might happen if the plugin is loaded multiple times,
+                    # e.g. with pytest's own inline tests.
+                    continue
+
+                warnings.warn("{}.{}_{} exists already, skipping.".format(
+                    pdb.Pdb, prefix, cmd), PytestPdbUserWarning)
+                continue
+
+            setattr(pdb.Pdb, attr, new)
 
 
 def pytest_enter_pdb(config):
